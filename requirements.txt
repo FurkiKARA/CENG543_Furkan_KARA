@@ -1,0 +1,11 @@
+pandas
+numpy
+google-generativeai
+python-dotenv
+rank_bm25
+nltk
+sentence-transformers
+torch
+ir_measures
+matplotlib
+openpyxl
