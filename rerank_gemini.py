@@ -4,6 +4,7 @@ import os
 import re
 from collections import defaultdict
 import google.generativeai as genai
+from google.api_core import exceptions # We need this for the specific error
 from dotenv import load_dotenv
 
 # --- CONFIGURATION ---
@@ -15,14 +16,12 @@ if not API_KEY:
 
 genai.configure(api_key=API_KEY)
 
-# *** UPDATED MODEL NAME BASED ON YOUR LIST ***
-# We are using 2.0 Flash because it is fast and you have access to it.
+# Using the old library syntax
 model = genai.GenerativeModel('models/gemini-2.0-flash')
 
 # --- SETUP CONSTANTS ---
 TEST_LIMIT = 50
 TOP_K = 10
-
 
 def load_jsonl_dict(filename, key_field):
     data = {}
@@ -31,7 +30,6 @@ def load_jsonl_dict(filename, key_field):
             item = json.loads(line)
             data[item[key_field]] = item
     return data
-
 
 def load_run_file(filename):
     candidates = defaultdict(list)
@@ -45,7 +43,6 @@ def load_run_file(filename):
                 candidates[qid].append(docid)
     return candidates
 
-
 print("1. Loading Data...")
 corpus = load_jsonl_dict("corpus.jsonl", "_id")
 queries = load_jsonl_dict("queries.jsonl", "_id")
@@ -54,8 +51,12 @@ bm25_candidates = load_run_file("run_bm25.txt")
 print(f"2. Starting Reranking on first {TEST_LIMIT} queries...")
 output_file = "run_gemini_zeroshot.txt"
 
-with open(output_file, 'w') as f_out:
+# Open file in append mode ('a') so we don't lose progress if we restart manually
+# BUT for a fresh run, change to 'w'
+mode = 'w' 
+with open(output_file, mode) as f_out:
     count = 0
+    
     for qid, doc_list in bm25_candidates.items():
         if count >= TEST_LIMIT:
             break
@@ -73,7 +74,7 @@ Documents:
 """
         doc_map = {}
         for idx, doc_id in enumerate(doc_list):
-            doc_text = corpus[doc_id]['text'][:500]
+            doc_text = corpus.get(doc_id, {}).get('text', '')[:500] 
             prompt += f"[{idx + 1}] {doc_text}\n\n"
             doc_map[str(idx + 1)] = doc_id
 
@@ -81,30 +82,46 @@ Documents:
 Output ONLY the ranking as a list of numbers: [1] > [2]
 Ranking:"""
 
-        try:
-            print(f"Ranking Query {count + 1}/{TEST_LIMIT}: {qid}...")
-            response = model.generate_content(prompt)
-            response_text = response.text.strip()
+        # --- RETRY LOGIC (OLD LIBRARY VERSION) ---
+        while True:
+            try:
+                print(f"Ranking Query {count + 1}/{TEST_LIMIT}: {qid}...")
+                
+                # OLD LIBRARY CALL
+                response = model.generate_content(prompt)
+                
+                # Check if response was blocked
+                if not response.parts:
+                    print(f"!! Blocked response for {qid}. Skipping.")
+                    break
 
-            # Simple Parsing
-            ranked_indices = re.findall(r'\[(\d+)\]', response_text)
+                response_text = response.text.strip()
+                ranked_indices = re.findall(r'\[(\d+)\]', response_text)
 
-            # Fallback
-            if not ranked_indices:
-                ranked_indices = [str(k) for k in range(1, len(doc_list) + 1)]
+                # Fallback
+                if not ranked_indices:
+                    ranked_indices = [str(k) for k in range(1, len(doc_list) + 1)]
 
-            rank = 1
-            for idx in ranked_indices:
-                if idx in doc_map:
-                    original_doc_id = doc_map[idx]
-                    f_out.write(f"{qid} Q0 {original_doc_id} {rank} {1.0 / rank:.4f} GEMINI\n")
-                    rank += 1
+                rank = 1
+                for idx in ranked_indices:
+                    if idx in doc_map:
+                        original_doc_id = doc_map[idx]
+                        f_out.write(f"{qid} Q0 {original_doc_id} {rank} {1.0 / rank:.4f} GEMINI\n")
+                        rank += 1
+                
+                count += 1
+                # Wait 4 seconds to avoid hitting the limit again too soon
+                time.sleep(4.0)
+                break 
 
-            count += 1
-            time.sleep(2.0)
-
-        except Exception as e:
-            print(f"Error on {qid}: {e}")
-            time.sleep(2)
+            except exceptions.ResourceExhausted:
+                # This catches the 429 Error
+                print(">> Rate limit hit (429). Sleeping for 60 seconds...")
+                time.sleep(60)
+                # Loop restarts and tries again automatically
+                
+            except Exception as e:
+                print(f"!! Fatal Error on {qid}: {e}")
+                break 
 
 print(f"Done! Results saved to {output_file}")

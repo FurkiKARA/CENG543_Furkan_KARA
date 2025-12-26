@@ -56,7 +56,7 @@ output_file = "run_gemini_fewshot.txt"
 
 # --- THE FEW-SHOT EXAMPLE (PROMPT ENGINEERING) ---
 few_shot_example = """
-EXAMPLE:
+--- EXAMPLE 1 ---
 Query: "Hırsızlık suçunun cezası nedir?"
 
 Documents:
@@ -65,6 +65,17 @@ Documents:
 [3] "TCK Madde 142: Nitelikli hırsızlık halleri şunlardır..." (Highly Relevant)
 
 Ranking: [1] > [3] > [2]
+-------------------------------------------------------------
+--- EXAMPLE 2 ---
+Query: "İşçi yıllık ücretli izne ne zaman hak kazanır?"
+
+Documents:
+[1] İşveren, işyerinde iş sağlığı ve güvenliği önlemlerini almakla yükümlüdür.
+[2] İşçilere verilecek yıllık ücretli izin süresi, hizmet süresi bir yıldan beş yıla kadar olanlara on dört günden az olamaz.
+[3] İşyerinde işe başladığı günden itibaren, deneme süresi de içinde olmak üzere, en az bir yıl çalışmış olan işçilere yıllık ücretli izin verilir.
+
+Ranking: [3] > [2] > [1]
+-----------------
 """
 
 with open(output_file, 'w') as f_out:
