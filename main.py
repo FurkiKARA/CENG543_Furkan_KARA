@@ -5,22 +5,24 @@ import os
 
 def run_step(script_name, description):
     """Runs a python script and handles errors."""
+    script_path = os.path.join("src", script_name)
+
     print(f"\n{'='*60}")
     print(f"STEP: {description}")
-    print(f"Running file: {script_name}...")
+    print(f"Running: {script_path}...")
     print(f"{'='*60}\n")
     
     start_time = time.time()
     
     # Check if file exists before running
-    if not os.path.exists(script_name):
-        print(f"❌ ERROR: File '{script_name}' not found. Make sure it is in this folder.")
+    if not os.path.exists(script_path):
+        print(f"❌ ERROR: File '{script_path}' not found. Make sure it is in this folder.")
         sys.exit(1)
 
     try:
         # sys.executable ensures we use the same Python environment (virtualenv/conda)
         # check=True raises an error if the script fails
-        subprocess.run([sys.executable, script_name], check=True)
+        subprocess.run([sys.executable, script_path], check=True)
         
         elapsed = time.time() - start_time
         print(f"\n✅ SUCCESS: {script_name} finished in {elapsed:.2f} seconds.")
@@ -33,28 +35,36 @@ def run_step(script_name, description):
         print("\n🛑 Pipeline interrupted by user.")
         sys.exit(0)
 
-# --- DEFINING THE PIPELINE ORDER ---
+# --- PIPELINE CONFIGURATION ---
+# Note: evaluate.py and plot_results.py stay in root,
+# while retrieval scripts are in src/
 pipeline_steps = [
     ("prepare_data.py",         "Converting raw CSV/Excel to Corpus/Query JSONL"),
     ("fix_qrels.py",            "Formatting Truth Data (Qrels) to TREC Format"),
     ("baseline_bm25.py",        "Running Sparse Retrieval (BM25) Baseline"),
     ("baseline_sbert.py",       "Running Dense Retrieval (S-BERT) Baseline"),
-    ("rerank_gemini.py",        "Running Zero-Shot Reranking (Gemini 2.0 Flash)"),
-    ("rerank_gemini_fewshot.py","Running Few-Shot Reranking (Gemini 2.0 Flash)"),
+    ("rerank_gemini.py",        "Running Zero-Shot Reranking"),
+    ("rerank_gemini_fewshot.py","Running Few-Shot Reranking"),
+]
+
+# Scripts that are in the ROOT folder (not src/)
+root_scripts = [
     ("evaluate.py",             "Calculating MAP, nDCG, and Recall Scores"),
     ("plot_results.py",         "Generating Performance Comparison Charts")
 ]
 
 if __name__ == "__main__":
     total_start = time.time()
-    print("🚀 STARTING RETRIEVAL SYSTEM PIPELINE")
-    print(f"Found {len(pipeline_steps)} steps to execute.\n")
+    print("🚀 STARTING ORGANIZED RETRIEVAL PIPELINE")
 
+    # 1. Run Source Scripts
     for script, desc in pipeline_steps:
         run_step(script, desc)
 
+    # 2. Run Evaluation/Plotting (Modified run_step logic for root)
+    for script, desc in root_scripts:
+        print(f"\nSTEP: {desc}")
+        subprocess.run([sys.executable, script], check=True)
+
     total_time = time.time() - total_start
-    print(f"\n{'='*60}")
-    print(f"🎉 PIPELINE COMPLETED SUCCESSFULLY in {total_time:.2f} seconds!")
-    print(f"Check the folder for 'run_*.txt' files and the results plot.")
-    print(f"{'='*60}")
+    print(f"\n{'=' * 60}\n🎉 ALL STEPS COMPLETED in {total_time:.2f} seconds!\n{'=' * 60}")
