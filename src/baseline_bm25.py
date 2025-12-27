@@ -41,7 +41,7 @@ tokenized_corpus = [word_tokenize(doc.lower()) for doc in corpus_texts]
 bm25 = BM25Okapi(tokenized_corpus)
 
 print("3. Searching...")
-output_file = "run_bm25.txt"
+output_file = "outputs/run_bm25.txt"
 
 with open(output_file, 'w') as f_out:
     # process only first 100 queries if you want a quick test,

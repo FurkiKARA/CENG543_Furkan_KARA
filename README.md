@@ -58,12 +58,7 @@ Generates a bar chart comparison of the results. <br>
 **requirements.txt:** List of Python dependencies.
 
 
-## Final Check
-1.  **Code:** All scripts are fixed and working.
-2.  **Config:** `requirements.txt` and `README.md` are ready.
-3.  **Results:** You have the evaluation table and the plot.
-
 ## Results Summary
 Gemini-based reranking significantly outperforms traditional retrieval methods on the Turkish Law Dataset. Zero-shot reranking achieves the best overall performance (MAP: 0.7633, nDCG@10: 0.8040), followed closely by few-shot prompting. BM25 remains a strong baseline, while Sentence-BERT underperforms without domain adaptation. These results demonstrate that prompt engineering alone can yield competitive retrieval performance without fine-tuning.
 
-![Results Comparison](results_chart.png)
+![Results Comparison](outputs/results_chart.png)

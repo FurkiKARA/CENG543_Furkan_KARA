@@ -21,8 +21,8 @@ model_name = 'paraphrase-multilingual-MiniLM-L12-v2'
 model = SentenceTransformer(model_name, device=device)
 
 print("2. Loading Data...")
-corpus = load_jsonl("corpus.jsonl")
-queries = load_jsonl("queries.jsonl")
+corpus = load_jsonl("data/processed/corpus.jsonl")
+queries = load_jsonl("data/processed/queries.jsonl")
 
 corpus_texts = [doc['text'] for doc in corpus]
 doc_ids = [doc['_id'] for doc in corpus]
@@ -44,7 +44,7 @@ print("Searching (Batch Mode)...")
 hits = util.semantic_search(query_embeddings, corpus_embeddings, top_k=100)
 
 print("5. Saving Results...")
-output_file = "run_sbert.txt"
+output_file = "outputs/run_sbert.txt"
 
 with open(output_file, 'w') as f_out:
     for i, query_hits in enumerate(hits):

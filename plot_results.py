@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import pandas as pd
 
-# Data from your final evaluation
+# Data from final evaluation
 data = {
     'System': ['BM25', 'S-BERT', 'Gemini (Zero)', 'Gemini (Few)'],
     'MAP': [0.7126, 0.5275, 0.7633, 0.7447],
@@ -30,5 +30,5 @@ ax.legend()
 ax.grid(axis='y', linestyle='--', alpha=0.7)
 
 # Save
-plt.savefig('results_chart.png', dpi=300)
+plt.savefig('outputs/results_chart.png', dpi=300)
 print("Chart saved as 'results_chart.png'")

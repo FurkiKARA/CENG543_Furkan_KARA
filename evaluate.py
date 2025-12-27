@@ -3,12 +3,12 @@ from ir_measures import *
 import os
 
 # CONFIGURATION
-QRELS_FILE = "qrels.tsv"
+QRELS_FILE = "data/processed/qrels.tsv"
 RUN_FILES = {
-    "BM25 (Baseline)": "run_bm25.txt",
-    "S-BERT (Dense)": "run_sbert.txt",
-    "Gemini (Zero-Shot)": "run_gemini_zeroshot.txt",
-    "Gemini (Few-Shot)": "run_gemini_fewshot.txt"
+    "BM25 (Baseline)": "outputs/run_bm25.txt",
+    "S-BERT (Dense)": "outputs/run_sbert.txt",
+    "Gemini (Zero-Shot)": "outputs/run_gemini_zeroshot.txt",
+    "Gemini (Few-Shot)": "outputs/run_gemini_fewshot.txt"
 }
 METRICS = [MAP, nDCG @ 10, R @ 10]
 

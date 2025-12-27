@@ -57,17 +57,17 @@ for index, row in df.iterrows():
 print(f"3. Saving files...")
 
 # Save Corpus (jsonl)
-with open("corpus.jsonl", "w", encoding="utf-8") as f:
+with open("data/processed/corpus.jsonl", "w", encoding="utf-8") as f:
     for item in corpus:
         f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
 # Save Queries (jsonl)
-with open("queries.jsonl", "w", encoding="utf-8") as f:
+with open("data/processed/queries.jsonl", "w", encoding="utf-8") as f:
     for item in queries:
         f.write(json.dumps(item, ensure_ascii=False) + "\n")
 
 # Save Qrels (tsv)
-with open("qrels.tsv", "w", encoding="utf-8") as f:
+with open("data/processed/qrels.tsv", "w", encoding="utf-8") as f:
     f.write("query-id\tcorpus-id\tscore\n")  # Header
     for line in qrels:
         f.write(line + "\n")

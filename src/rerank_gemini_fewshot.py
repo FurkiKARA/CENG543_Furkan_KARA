@@ -45,13 +45,13 @@ def load_run_file(filename):
 
 
 print("1. Loading Data for Few-Shot Reranking...")
-corpus = load_jsonl_dict("corpus.jsonl", "_id")
-queries = load_jsonl_dict("queries.jsonl", "_id")
+corpus = load_jsonl_dict("data/processed/corpus.jsonl", "_id")
+queries = load_jsonl_dict("data/processed/queries.jsonl", "_id")
 # We rerank the output of BM25
-bm25_candidates = load_run_file("run_bm25.txt")
+bm25_candidates = load_run_file("outputs/run_bm25.txt")
 
 print(f"2. Starting Few-Shot Reranking on {TEST_LIMIT} queries...")
-output_file = "run_gemini_fewshot.txt"
+output_file = "outputs/run_gemini_fewshot.txt"
 
 # --- THE FEW-SHOT EXAMPLE (PROMPT ENGINEERING) ---
 few_shot_example = """
