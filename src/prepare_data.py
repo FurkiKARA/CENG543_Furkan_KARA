@@ -11,11 +11,7 @@ COL_DOC = "cevap"  # Column containing the law/answer
 
 # ----------------------------------------------------------------
 print(f"1. Reading {INPUT_FILE}...")
-try:
-    df = pd.read_csv(INPUT_FILE)
-except:
-    # Fallback if it's actually an Excel file
-    df = pd.read_excel("raw_data.xlsx")
+df = pd.read_csv(INPUT_FILE)
 
 # Basic cleanup
 if COL_QUERY not in df.columns or COL_DOC not in df.columns:
