@@ -3,7 +3,7 @@ import time
 import os
 import re
 from collections import defaultdict
-import google.generativeai as genai
+from google import genai
 from google.api_core import exceptions # We need this for the specific error
 from dotenv import load_dotenv
 
@@ -14,10 +14,9 @@ API_KEY = os.getenv("GOOGLE_API_KEY")
 if not API_KEY:
     raise ValueError("GOOGLE_API_KEY not found in .env file.")
 
-genai.configure(api_key=API_KEY)
+client = genai.Client(api_key=API_KEY)
+model = client.models
 
-# Using the old library syntax
-model = genai.GenerativeModel('models/gemini-2.0-flash')
 
 # --- SETUP CONSTANTS ---
 TEST_LIMIT = 50
@@ -82,14 +81,19 @@ Documents:
 Output ONLY the ranking as a list of numbers: [1] > [2]
 Ranking:"""
 
-        # --- RETRY LOGIC (OLD LIBRARY VERSION) ---
+        # --- RETRY LOGIC ---
         while True:
             try:
                 print(f"Ranking Query {count + 1}/{TEST_LIMIT}: {qid}...")
-                
-                # OLD LIBRARY CALL
-                response = model.generate_content(prompt)
-                
+
+                MODEL_NAME = "models/gemini-2.0-flash"
+
+                # LIBRARY CALL
+                response = model.generate_content(
+                    model=MODEL_NAME,
+                    contents=prompt
+                )
+
                 # Check if response was blocked
                 if not response.parts:
                     print(f"!! Blocked response for {qid}. Skipping.")
@@ -111,7 +115,7 @@ Ranking:"""
                 
                 count += 1
                 # Wait 4 seconds to avoid hitting the limit again too soon
-                time.sleep(4.0)
+                time.sleep(10.0)
                 break 
 
             except exceptions.ResourceExhausted:

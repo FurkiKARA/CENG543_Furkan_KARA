@@ -3,7 +3,7 @@ import time
 import os
 import re
 from collections import defaultdict
-import google.generativeai as genai
+from google import genai
 from dotenv import load_dotenv
 
 # --- CONFIGURATION ---
@@ -14,8 +14,7 @@ if not API_KEY:
     print("ERROR: GOOGLE_API_KEY not found in .env file.")
     exit()
 
-genai.configure(api_key=API_KEY)
-model = genai.GenerativeModel('models/gemini-2.0-flash')
+client = genai.Client(api_key=API_KEY)
 
 # SETTINGS
 TEST_LIMIT = 100  # Run 100 queries for better stats
@@ -115,7 +114,12 @@ Ranking:"""
             if count % 10 == 0:
                 print(f"Processing {count}/{TEST_LIMIT}: {qid}...")
 
-            response = model.generate_content(prompt)
+            response = client.models.generate_content(
+                model="gemini-2.0-flash",
+                contents=prompt
+            )
+            response_text = response.text.strip()
+
             response_text = response.text.strip()
 
             # Parse numbers like [1], [2]

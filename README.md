@@ -42,7 +42,7 @@ Uses the Gemini API to rerank the top results from BM25. Note: These scripts req
 
 **4. Evaluation** <br>
 Calculates MAP, nDCG@10, and Recall@10 for all systems. <br>
-`python final_eval.py`
+`python evaluate.py`
  
 **5. Visualization (Optional)** <br>
 Generates a bar chart comparison of the results. <br>
