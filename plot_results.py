@@ -29,6 +29,6 @@ ax.set_ylim(0, 1.0)
 ax.legend()
 ax.grid(axis='y', linestyle='--', alpha=0.7)
 
-# Save
+# Saving
 plt.savefig('outputs/results_chart.png', dpi=300)
 print("Chart saved as 'results_chart.png'")

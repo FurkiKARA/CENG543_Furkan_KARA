@@ -4,13 +4,15 @@
 **Course:** CENG543 - Term Project
 
 ## Project Overview
-This project investigates the effectiveness of Large Language Models (LLMs) for information retrieval in the legal domain. It implements a **"Retrieve-then-Rerank"** pipeline that compares:
-1.  **BM25 (Sparse Baseline):** Traditional keyword-based retrieval.
-2.  **Sentence-BERT (Dense Baseline):** Semantic similarity retrieval.
-3.  **Gemini Zero-Shot Reranking:** Using LLM prompt engineering to rank documents without examples.
-4.  **Gemini Few-Shot Reranking:** Using LLM prompt engineering with in-context examples.
+This project investigates the effectiveness of Large Language Models (LLMs) for information 
+retrieval in the legal domain. It implements a "Retrieve-then-Rerank" pipeline that compares 
+traditional keyword-based methods against modern semantic and LLM-powered reranking strategies 
+using the Turkish Law Dataset. Here systems compared are listed:\
 
-The project uses the **Turkish Law Dataset** for evaluation.
+**BM25 (Sparse Baseline):** Keyword-based retrieval.\
+**Sentence-BERT (Dense Baseline):** Semantic similarity retrieval.\
+**Gemini Zero-Shot Reranking:** Ranking via LLM without prior examples.\
+**Gemini Few-Shot Reranking:** Ranking via LLM using in-context few-shot examples.
 
 ## Installation
 
@@ -50,14 +52,29 @@ Generates a bar chart comparison of the results. <br>
 `python plot_results.py`
 
 ## File Structure
-**prepare_data.py:** Preprocesses CSV/Excel data into JSONL format.<br>
-**baseline_bm25.py:** Implements sparse retrieval using BM25Okapi.<br>
-**baseline_sbert.py:** Implements dense retrieval using paraphrase-multilingual-MiniLM-L12-v2.<br>
-**rerank_gemini.py:** Zero-shot reranking script.<br>
-**rerank_gemini_fewshot.py:** Few-shot reranking script with prompt engineering.<br>
-**evaluate.py:** Evaluation script using ir_measures.<br>
-**requirements.txt:** List of Python dependencies.
+**main.py:** The central orchestrator that runs the entire pipeline in sequence.\
 
+**src/:** Contains the core logic scripts for the retrieval pipeline.\
+&nbsp;&nbsp;&nbsp;&nbsp;**prepare_data.py:** Preprocesses raw CSV/Excel data into JSONL format for the corpus and queries.\
+&nbsp;&nbsp;&nbsp;&nbsp;**fix_qrels.py:** Formats the ground truth data (Qrels) into the standard TREC format.\
+&nbsp;&nbsp;&nbsp;&nbsp;**baseline_bm25.py:** Implements sparse retrieval using the BM25Okapi algorithm.\
+&nbsp;&nbsp;&nbsp;&nbsp;**baseline_sbert.py:** Implements dense retrieval using the Sentence-BERT model.\
+&nbsp;&nbsp;&nbsp;&nbsp;**rerank_gemini.py:** Implements Zero-shot reranking using the Gemini-2.0-Flash API.\
+&nbsp;&nbsp;&nbsp;&nbsp;**rerank_gemini_fewshot.py:** Implements Few-shot reranking with prompt engineering and in-context &nbsp;&nbsp;&nbsp;&nbsp;examples.
+
+**evaluate.py:** Calculates IR metrics (MAP, nDCG@10, and Recall) for all generated runs.\
+**plot_results.py:** Generates a bar chart comparison of performance metrics.
+
+**requirements.txt:** List of Python dependencies required to run the project.\
+**.env:** (User-created) Stores the necessary API keys for Gemini integration.
+
+**data/:** Organized directory for project datasets.\
+&nbsp;&nbsp;&nbsp;&nbsp;**raw/:** Contains the original, unprocessed `raw_data.csv`.\
+&nbsp;&nbsp;&nbsp;&nbsp;**processed/:** Cleaned data including corpus.jsonl, queries.jsonl, and TREC-formatted `qrels.tsv`.
+
+**outputs/:** Stores all generated run results and visualizations.\
+&nbsp;&nbsp;&nbsp;&nbsp;**run_*.txt:** Retrieval and reranking output files (BM25, S-BERT, Gemini).\
+&nbsp;&nbsp;&nbsp;&nbsp;**results_chart.png:** The visual performance comparison chart.
 
 ## Results Summary
 The evaluation on the Turkish Law Dataset demonstrates that LLM-based reranking significantly enhances retrieval precision compared to traditional methods.\
@@ -65,3 +82,10 @@ Gemini Few-Shot achieved the highest overall performance (MAP: 0.7633), indicati
 BM25 remains a very robust baseline for Turkish text, outperforming the S-BERT dense model, which likely struggled due to a lack of domain-specific fine-tuning on Turkish legal terminology.\
 Gemini Zero-Shot also showed impressive gains over the baselines, proving that prompt engineering is a viable alternative to expensive fine-tuning for domain-specific tasks.
 ![Results Comparison](outputs/results_chart.png)
+
+| Model             | Column 2  | Column 3  | Column 4  |
+|-------------------|-----------|-----------|-----------|
+| BM25 (Baseline)   | 0.621     | 0.654     | 0.681     |
+| S-BERT (Baseline) | 0.512     | 0.543     | 0.592     |
+| Gemini Zero-Shot  | 0.714     | 0.732     | 0.751     |
+| Gemini Few-Shot   | **0.763** | **0.781** | **0.804** |

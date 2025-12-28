@@ -13,7 +13,7 @@ def load_jsonl(filename):
 
 
 # 1. Load Model
-# If you have a GPU, this puts it on the GPU. If not, CPU.
+# If current device has a GPU, this puts it on the GPU. If not, CPU.
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
 print(f"Using device: {device}")
 

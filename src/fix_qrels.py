@@ -1,6 +1,6 @@
 import pandas as pd
 
-# 1. Read your existing 3-column qrels
+# 1. Reading existing 3-column qrels
 print("Reading current qrels...")
 df = pd.read_csv("data/processed/qrels.tsv", sep="\t")
 

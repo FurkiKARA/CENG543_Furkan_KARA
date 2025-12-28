@@ -6,7 +6,7 @@ from collections import defaultdict
 from google import genai
 from dotenv import load_dotenv
 
-# --- CONFIGURATION ---
+# CONFIGURATION
 load_dotenv()
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
@@ -53,7 +53,7 @@ bm25_candidates = load_run_file("outputs/run_bm25.txt")
 print(f"2. Starting Few-Shot Reranking on {TEST_LIMIT} queries...")
 output_file = "outputs/run_gemini_fewshot.txt"
 
-# --- THE FEW-SHOT EXAMPLE (PROMPT ENGINEERING) ---
+# The Few Shot examples I am giving to prompt
 few_shot_example = """
 --- EXAMPLE 1 ---
 Query: "Hırsızlık suçunun cezası nedir?"
@@ -69,9 +69,9 @@ Ranking: [1] > [3] > [2]
 Query: "İşçi yıllık ücretli izne ne zaman hak kazanır?"
 
 Documents:
-[1] İşveren, işyerinde iş sağlığı ve güvenliği önlemlerini almakla yükümlüdür.
-[2] İşçilere verilecek yıllık ücretli izin süresi, hizmet süresi bir yıldan beş yıla kadar olanlara on dört günden az olamaz.
-[3] İşyerinde işe başladığı günden itibaren, deneme süresi de içinde olmak üzere, en az bir yıl çalışmış olan işçilere yıllık ücretli izin verilir.
+[1] "İşveren, işyerinde iş sağlığı ve güvenliği önlemlerini almakla yükümlüdür." (Irrelevant)
+[2] "İşçilere verilecek yıllık ücretli izin süresi, hizmet süresi bir yıldan beş yıla kadar olanlara on dört günden az olamaz." (Relevant Law)
+[3] "İşyerinde işe başladığı günden itibaren, deneme süresi de içinde olmak üzere, en az bir yıl çalışmış olan işçilere yıllık ücretli izin verilir." (Highly Relevant)
 
 Ranking: [3] > [2] > [1]
 -----------------
@@ -87,7 +87,7 @@ with open(output_file, 'w') as f_out:
 
         query_text = queries[qid]['text']
 
-        # Construct the Prompt
+        # Constructing the Prompt
         prompt = f"""You are an expert Turkish Lawyer and Judge.
 Your task is to rank the provided documents based on their relevance to the user query.
 Use the logical reasoning of a legal expert.
@@ -101,7 +101,7 @@ Documents:
 """
         doc_map = {}
         for idx, doc_id in enumerate(doc_list):
-            # Truncate text to 500 chars to save tokens/speed
+            # Truncated text to 500 chars to save tokens/speed, this could be increased.
             doc_text = corpus[doc_id]['text'][:500]
             prompt += f"[{idx + 1}] {doc_text}\n\n"
             doc_map[str(idx + 1)] = doc_id
@@ -120,9 +120,7 @@ Ranking:"""
             )
             response_text = response.text.strip()
 
-            response_text = response.text.strip()
-
-            # Parse numbers like [1], [2]
+            # Parsing numbers like [1], [2]
             ranked_indices = re.findall(r'\[(\d+)\]', response_text)
 
             # Fallback if model fails to output numbers
@@ -133,13 +131,12 @@ Ranking:"""
             for idx in ranked_indices:
                 if idx in doc_map:
                     original_doc_id = doc_map[idx]
-                    # Score = 1/rank (Reciprocal Rank)
+                    # Score = 1/rank
                     score = 1.0 / rank
                     f_out.write(f"{qid} Q0 {original_doc_id} {rank} {score:.4f} GEMINI_FEWSHOT\n")
                     rank += 1
 
             count += 1
-            time.sleep(1.5)  # Avoid hitting rate limits
 
         except Exception as e:
             print(f"Error on {qid}: {e}")

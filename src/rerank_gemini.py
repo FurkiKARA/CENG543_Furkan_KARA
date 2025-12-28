@@ -7,7 +7,7 @@ from google import genai
 from google.api_core import exceptions
 from dotenv import load_dotenv
 
-# --- CONFIGURATION ---
+# CONFIGURATION
 load_dotenv()
 API_KEY = os.getenv("GOOGLE_API_KEY")
 
@@ -16,11 +16,11 @@ if not API_KEY:
 
 client = genai.Client(api_key=API_KEY)
 
-# --- SETUP CONSTANTS ---
+# CONSTANTS
 TEST_LIMIT = 50
 TOP_K = 10
-OUTPUT_FILE = "outputs/run_gemini_zeroshot.txt"  # Folder updated
-MODEL_ID = "gemini-2.0-flash"  # Simplified name
+OUTPUT_FILE = "outputs/run_gemini_zeroshot.txt"
+MODEL_ID = "gemini-2.0-flash"  # chosen model
 
 
 def load_jsonl_dict(filename, key_field):
@@ -74,7 +74,7 @@ with open(OUTPUT_FILE, 'w') as f_out:
             try:
                 print(f"Ranking Query {count + 1}/{TEST_LIMIT}: {qid}...")
 
-                # Corrected API Call
+                # API Call
                 response = client.models.generate_content(
                     model=MODEL_ID,
                     contents=prompt
@@ -96,7 +96,6 @@ with open(OUTPUT_FILE, 'w') as f_out:
                         f_out.write(f"{qid} Q0 {doc_map[idx]} {rank} {1.0 / rank:.4f} GEMINI_ZERO\n")
 
                 count += 1
-                time.sleep(1.0)  # Flash is fast, but keep a small buffer
                 break
 
             except exceptions.ResourceExhausted:

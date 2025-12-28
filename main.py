@@ -20,7 +20,7 @@ def run_step(script_name, description):
         sys.exit(1)
 
     try:
-        # sys.executable ensures we use the same Python environment (virtualenv/conda)
+        # sys.executable ensures we use the same Python environment (virtualenv)
         # check=True raises an error if the script fails
         subprocess.run([sys.executable, script_path], check=True)
         
@@ -36,8 +36,6 @@ def run_step(script_name, description):
         sys.exit(0)
 
 # --- PIPELINE CONFIGURATION ---
-# Note: evaluate.py and plot_results.py stay in root,
-# while retrieval scripts are in src/
 pipeline_steps = [
     ("prepare_data.py",         "Converting raw CSV/Excel to Corpus/Query JSONL"),
     ("fix_qrels.py",            "Formatting Truth Data (Qrels) to TREC Format"),
@@ -61,7 +59,7 @@ if __name__ == "__main__":
     for script, desc in pipeline_steps:
         run_step(script, desc)
 
-    # 2. Run Evaluation/Plotting (Modified run_step logic for root)
+    # 2. Run Evaluation/Plotting
     for script, desc in root_scripts:
         print(f"\nSTEP: {desc}")
         subprocess.run([sys.executable, script], check=True)

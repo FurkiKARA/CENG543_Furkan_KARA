@@ -1,6 +1,5 @@
 import pandas as pd
 import json
-import hashlib
 
 # CONFIGURATION
 INPUT_FILE = "data/raw/raw_data.csv"
@@ -23,7 +22,7 @@ if COL_QUERY not in df.columns or COL_DOC not in df.columns:
 print("2. Processing...")
 
 # We need to handle duplicates.
-# In real life, many questions might point to the SAME law article.
+# In real life, many questions might point to the same law article.
 # We create a dictionary of Unique Documents to build our 'Corpus'
 unique_docs = {}  # Text -> ID
 doc_counter = 0
@@ -76,4 +75,3 @@ print(f"SUCCESS!")
 print(f"- Created 'corpus.jsonl' with {len(corpus)} documents.")
 print(f"- Created 'queries.jsonl' with {len(queries)} queries.")
 print(f"- Created 'qrels.tsv' with {len(qrels)} connections.")
-print("You are now ready to run Phase 2 (BM25).")

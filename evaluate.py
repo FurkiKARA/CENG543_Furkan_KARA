@@ -26,17 +26,17 @@ def load_run_ids(filepath):
 
 print("=== DIAGNOSTIC EVALUATION (FIXED) ===")
 
-# 1. Load Qrels into memory (List) to allow multiple passes
+# 1. Loading Qrels into memory to allow multiple passes
 if not os.path.exists(QRELS_FILE):
     print(f"CRITICAL ERROR: {QRELS_FILE} not found.")
     exit()
 
-# FIX: Convert generator to list immediately
+# Converting generator to list immediately
 qrels = list(ir_measures.read_trec_qrels(QRELS_FILE))
 print(f"QRELS Loaded. Total Qrels objects: {len(qrels)}")
 print("-" * 60)
 
-# 2. Evaluate Each System
+# 2. Evaluating Each System
 results_table = []
 
 for system_name, file_path in RUN_FILES.items():
@@ -46,7 +46,7 @@ for system_name, file_path in RUN_FILES.items():
         results_table.append({'System': system_name, 'Status': 'Missing File'})
         continue
 
-    # Get IDs from the run file
+    # Getting IDs from the run file
     run_ids = load_run_ids(file_path)
 
     # FILTERING: Create a subset of Qrels that only contains queries found in this run
@@ -64,7 +64,7 @@ for system_name, file_path in RUN_FILES.items():
     try:
         run = ir_measures.read_trec_run(file_path)
 
-        # Calculate scores on the filtered subset
+        # Calculating scores on the filtered subset
         scores = ir_measures.calc_aggregate(METRICS, filtered_qrels, run)
 
         print(f"  -> MAP: {scores[MAP]:.4f}")
