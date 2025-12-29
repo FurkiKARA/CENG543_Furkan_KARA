@@ -17,7 +17,7 @@ if not API_KEY:
 client = genai.Client(api_key=API_KEY)
 
 # CONSTANTS
-TEST_LIMIT = 50
+TEST_LIMIT = 100
 TOP_K = 10
 OUTPUT_FILE = "outputs/run_gemini_zeroshot.txt"
 MODEL_ID = "gemini-2.0-flash"  # chosen model

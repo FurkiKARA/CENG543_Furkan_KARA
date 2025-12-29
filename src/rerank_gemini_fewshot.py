@@ -59,19 +59,19 @@ few_shot_example = """
 Query: "Hırsızlık suçunun cezası nedir?"
 
 Documents:
-[1] "TCK Madde 141: Zilyedinin rızası olmadan başkasına ait taşınır bir malı..." (Relevant Law)
-[2] "Borçlar Kanunu Madde 1: Sözleşme, tarafların iradelerini..." (Irrelevant)
-[3] "TCK Madde 142: Nitelikli hırsızlık halleri şunlardır..." (Highly Relevant)
+[1] "TCK Madde 141: Zilyedinin rızası olmadan başkasına ait taşınır bir malı..." 
+[2] "Borçlar Kanunu Madde 1: Sözleşme, tarafların iradelerini..." 
+[3] "TCK Madde 142: Nitelikli hırsızlık halleri şunlardır..." 
 
-Ranking: [1] > [3] > [2]
+Ranking: [3] > [1] > [2]
 -------------------------------------------------------------
 --- EXAMPLE 2 ---
 Query: "İşçi yıllık ücretli izne ne zaman hak kazanır?"
 
 Documents:
-[1] "İşveren, işyerinde iş sağlığı ve güvenliği önlemlerini almakla yükümlüdür." (Irrelevant)
-[2] "İşçilere verilecek yıllık ücretli izin süresi, hizmet süresi bir yıldan beş yıla kadar olanlara on dört günden az olamaz." (Relevant Law)
-[3] "İşyerinde işe başladığı günden itibaren, deneme süresi de içinde olmak üzere, en az bir yıl çalışmış olan işçilere yıllık ücretli izin verilir." (Highly Relevant)
+[1] "İşveren, işyerinde iş sağlığı ve güvenliği önlemlerini almakla yükümlüdür." 
+[2] "İşçilere verilecek yıllık ücretli izin süresi, hizmet süresi bir yıldan beş yıla kadar olanlara on dört günden az olamaz
+[3] "İşyerinde işe başladığı günden itibaren, deneme süresi de içinde olmak üzere, en az bir yıl çalışmış olan işçilere yıllık ücretli izin verilir." 
 
 Ranking: [3] > [2] > [1]
 -----------------

@@ -60,7 +60,7 @@ Generates a bar chart comparison of the results. <br>
 &nbsp;&nbsp;&nbsp;&nbsp;**baseline_bm25.py:** Implements sparse retrieval using the BM25Okapi algorithm.\
 &nbsp;&nbsp;&nbsp;&nbsp;**baseline_sbert.py:** Implements dense retrieval using the Sentence-BERT model.\
 &nbsp;&nbsp;&nbsp;&nbsp;**rerank_gemini.py:** Implements Zero-shot reranking using the Gemini-2.0-Flash API.\
-&nbsp;&nbsp;&nbsp;&nbsp;**rerank_gemini_fewshot.py:** Implements Few-shot reranking with prompt engineering and in-context &nbsp;&nbsp;&nbsp;&nbsp;examples.
+&nbsp;&nbsp;&nbsp;&nbsp;**rerank_gemini_fewshot.py:** Implements Few-shot reranking with prompt engineering and in-context examples.
 
 **evaluate.py:** Calculates IR metrics (MAP, nDCG@10, and Recall) for all generated runs.\
 **plot_results.py:** Generates a bar chart comparison of performance metrics.
@@ -83,9 +83,9 @@ BM25 remains a very robust baseline for Turkish text, outperforming the S-BERT d
 Gemini Zero-Shot also showed impressive gains over the baselines, proving that prompt engineering is a viable alternative to expensive fine-tuning for domain-specific tasks.
 ![Results Comparison](outputs/results_chart.png)
 
-| Model             | MAP       | nDCG@10   | Recall@10  |
-|-------------------|-----------|-----------|------------|
-| BM25 (Baseline)   | 0.621     | 0.654     | 0.681      |
-| S-BERT (Baseline) | 0.512     | 0.543     | 0.592      |
-| Gemini Zero-Shot  | 0.714     | 0.732     | 0.751      |
-| Gemini Few-Shot   | **0.763** | **0.781** | **0.804**  |
+| Model              | MAP        | nDCG@10    | Recall@10  |
+|--------------------|------------|------------|------------|
+| BM25 (Baseline)    | 0.7126     | 0.7500     | 0.8718     |
+| S-BERT (Dense)     | 0.5275     | 0.5713     | 0.7287     |
+| Gemini (Zero-Shot) | **0.7850** | **0.8173** | **0.9100** |
+|  Gemini (Few-Shot) | 0.7543     | 0.7938     | **0.9100** |
