@@ -19,7 +19,12 @@ using the Turkish Law Dataset. Here systems compared are listed:\
 1. **Clone or download** this repository.
 2. **Install dependencies** using the provided requirements file: <br>
    ` pip install -r requirements.txt `
-3. Set up API Key: <br>
+3. **(Optional) Enable GPU Support:** By default, the command above 
+installs the CPU version of PyTorch (on Windows) to keep the file size 
+small. If you have an NVIDIA GPU and want faster processing, run this 
+command on your terminal after installing requirements:<br>
+   `pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu121`
+4. **Set up API Key:** <br>
 Create a file named `.env` in the root directory.
 Add your Google Gemini API key:
 GOOGLE_API_KEY=your_api_key_here

@@ -4,7 +4,7 @@ import time
 import os
 
 def run_step(script_name, description):
-    """Runs a python script and handles errors."""
+    """Runs a python script in order so that user doesn't have to run every file manually."""
     script_path = os.path.join("src", script_name)
 
     print(f"\n{'='*60}")
@@ -16,7 +16,7 @@ def run_step(script_name, description):
     
     # Check if file exists before running
     if not os.path.exists(script_path):
-        print(f"❌ ERROR: File '{script_path}' not found. Make sure it is in this folder.")
+        print(f"❌ ERROR: File '{script_path}' not found. Make sure it is in correct folder.")
         sys.exit(1)
 
     try:
@@ -35,10 +35,9 @@ def run_step(script_name, description):
         print("\n🛑 Pipeline interrupted by user.")
         sys.exit(0)
 
-# --- PIPELINE CONFIGURATION ---
+# PIPELINE CONFIGURATION
 pipeline_steps = [
     ("prepare_data.py",         "Converting raw CSV/Excel to Corpus/Query JSONL"),
-    ("fix_qrels.py",            "Formatting Truth Data (Qrels) to TREC Format"),
     ("baseline_bm25.py",        "Running Sparse Retrieval (BM25) Baseline"),
     ("baseline_sbert.py",       "Running Dense Retrieval (S-BERT) Baseline"),
     ("rerank_gemini.py",        "Running Zero-Shot Reranking"),
@@ -65,4 +64,4 @@ if __name__ == "__main__":
         subprocess.run([sys.executable, script], check=True)
 
     total_time = time.time() - total_start
-    print(f"\n{'=' * 60}\n🎉 ALL STEPS COMPLETED in {total_time:.2f} seconds!\n{'=' * 60}")
+    print(f"\n{'=' * 60}\n ALL STEPS COMPLETED in {total_time:.2f} seconds!\n{'=' * 60}")
