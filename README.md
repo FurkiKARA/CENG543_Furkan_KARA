@@ -94,9 +94,9 @@ BM25 remains a very robust baseline for Turkish text, outperforming the S-BERT d
 Gemini Zero-Shot also showed impressive gains over the baselines, proving that prompt engineering is a viable alternative to expensive fine-tuning for domain-specific tasks.
 ![Results Comparison](outputs/results_chart.png)
 
-| Model              | MAP        | nDCG@10    | Recall@10  |
-|--------------------|------------|------------|------------|
-| BM25 (Baseline)    | 0.7126     | 0.7500     | 0.8718     |
-| S-BERT (Dense)     | 0.5275     | 0.5713     | 0.7287     |
-| Gemini (Zero-Shot) | **0.7850** | **0.8173** | **0.9100** |
-|  Gemini (Few-Shot) | 0.7543     | 0.7938     | **0.9100** |
+| Model              | MAP        | nDCG@10    | Recall@10   |
+|--------------------|------------|------------|-------------|
+| BM25 (Baseline)    | 0.7126     | 0.7500     | 0.8718      |
+| S-BERT (Dense)     | 0.5275     | 0.5713     | 0.7287      |
+| Gemini (Zero-Shot) | **0.7934** | **0.8212** | **0.9013**  |
+|  Gemini (Few-Shot) | 0.7639     | 0.7991     | **0.9013**  |
