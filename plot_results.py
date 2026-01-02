@@ -1,34 +1,50 @@
 import matplotlib.pyplot as plt
 import pandas as pd
+import numpy as np
 
-# Data from final evaluation
-data = {
-    'System': ['BM25', 'S-BERT', 'Gemini (Zero)', 'Gemini (Few)'],
-    'MAP': [0.7126, 0.5275, 0.7633, 0.7447],
-    'nDCG@10': [0.7500, 0.5713, 0.8040, 0.7866]
-}
+filepath = "outputs/evaluation_results.csv"
+try:
+    df = pd.read_csv(filepath)
+except FileNotFoundError as e:
+    print("Error: Run evaluate.py first to generate the CSV.")
+    exit()
 
-df = pd.DataFrame(data)
+# Metrics to be plotted
+metrics = ['MAP', 'nDCG@10', 'Recall@10']
 
-# Plotting
-fig, ax = plt.subplots(figsize=(10, 6))
+x = np.arange(len(df['System']))
+width = 0.25  # Thin bars to fit 3 metrics
+fig, ax = plt.subplots(figsize=(12, 6))
 
-x = range(len(df))
-width = 0.35
+# Dynamic Plotting Loop
+for i, metric in enumerate(metrics):
+    # This calculates where to put the bar so they stand side-by-side rather than on top of each other.
+    # It shifts the bars slightly left or right based on which metric it is.
+    position = x + (i * width) - (width * len(metrics) / 2) + (width / 2)
 
-# Bars
-ax.bar([i - width/2 for i in x], df['MAP'], width, label='MAP', color='#4c72b0')
-ax.bar([i + width/2 for i in x], df['nDCG@10'], width, label='nDCG@10', color='#dd8452')
+    bars = ax.bar(position, df[metric], width, label=metric)
 
-# Labels and Title
+    # Add Value Labels on top of bars
+    for bar in bars:
+        height = bar.get_height()
+
+        # This acts like a label maker. It reads the height of the bar (e.g., 0.763) and writes that
+        # number directly on top of the bar so you don't have to guess the value by looking at the axis.
+        ax.annotate(f'{height:.3f}',
+                    xy=(bar.get_x() + bar.get_width() / 2, height),
+                    xytext=(0, 3),  # 3 points vertical offset
+                    textcoords="offset points",
+                    ha='center', va='bottom', fontsize=8, rotation=90)
+
+# Formatting
 ax.set_ylabel('Score')
-ax.set_title('Comparison of Retrieval Models on Turkish Law Dataset')
+ax.set_title('Performance Comparison: BM25 vs Dense vs LLMs')
 ax.set_xticks(x)
 ax.set_xticklabels(df['System'])
-ax.set_ylim(0, 1.0)
-ax.legend()
-ax.grid(axis='y', linestyle='--', alpha=0.7)
+ax.set_ylim(0, 1.1)  # Sets the graph height slightly above 1.0 (110%) to make room for the text labels.
+ax.legend(loc='lower right')
+ax.grid(axis='y', linestyle='--', alpha=0.3)
 
-# Saving
+plt.tight_layout()
 plt.savefig('outputs/results_chart.png', dpi=300)
-print("Chart saved as 'results_chart.png'")
+print(f"Chart saved at: {'outputs/results_chart.png'}")

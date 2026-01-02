@@ -2,9 +2,10 @@ import json
 import time
 from sentence_transformers import SentenceTransformer, util
 import torch
+from typing import List, Dict
 
 
-def load_jsonl(filename):
+def load_jsonl(filename: str) -> List[Dict]:
     data = []
     with open(filename, 'r', encoding='utf-8') as f:
         for line in f:

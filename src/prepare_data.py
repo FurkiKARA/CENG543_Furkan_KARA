@@ -32,7 +32,7 @@ queries = []
 qrels = []
 corpus = []
 
-for index, row in df.itertuples():
+for index, row in df.iterrows():
     query_text = str(row[COL_QUERY]).strip()
     doc_text = str(row[COL_DOC]).strip()
 

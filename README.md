@@ -44,12 +44,18 @@ Generates the initial retrieval runs using BM25 and S-BERT. <br>
 `python baseline_sbert.py`
 
 **3. Run LLM Reranking** <br>
-Uses the Gemini API to rerank the top results from BM25. Note: These scripts require a valid API key and internet connection. <br>
+Uses the Gemini API to rerank the top results from BM25. Note: These scripts require a valid API key and 
+internet connection. <br>
 `python rerank_gemini.py`          # Zero-Shot <br>
 `python rerank_gemini_fewshot.py`  # Few-Shot
 
-**4. Evaluation** <br>
-Calculates MAP, nDCG@10, and Recall@10 for all systems. <br>
+**4. Evaluation**
+Calculates the following metrics for all systems to assess performance:
+* **Mean Average Precision (MAP):** Measures overall system quality, rewarding systems that place relevant documents higher.
+* **Normalized Discounted Cumulative Gain (nDCG@10):** Measures ranking quality, giving more weight to highly relevant documents at the top.
+* **Recall at k (R@10):** Measures coverage, or what percentage of the relevant documents were found in the top 10.
+
+Run the evaluation script:
 `python evaluate.py`
  
 **5. Visualization (Optional)** <br>
