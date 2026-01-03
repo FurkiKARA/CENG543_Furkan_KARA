@@ -31,7 +31,7 @@ GOOGLE_API_KEY=your_api_key_here
 
 ## Usage Pipeline
 Simply run the `python main.py` file, and it will execute all necessary files in correct order.\
-Here is the order to of the files.
+Here is the order of the files.
 
 **1. Data Preparation** <br>
 Converts raw data into the standard corpus, queries, and qrels (TREC format). <br>
