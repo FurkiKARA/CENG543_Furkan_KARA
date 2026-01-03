@@ -7,7 +7,7 @@
 This project investigates the effectiveness of Large Language Models (LLMs) for information 
 retrieval in the legal domain. It implements a "Retrieve-then-Rerank" pipeline that compares 
 traditional keyword-based methods against modern semantic and LLM-powered reranking strategies 
-using the Turkish Law Dataset. Here systems compared are listed:\
+using the Turkish Law Dataset. Here systems compared are listed:
 
 **BM25 (Sparse Baseline):** Keyword-based retrieval.\
 **Sentence-BERT (Dense Baseline):** Semantic similarity retrieval.\
