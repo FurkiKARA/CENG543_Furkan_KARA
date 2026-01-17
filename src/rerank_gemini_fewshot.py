@@ -76,24 +76,28 @@ output_file = "outputs/run_gemini_fewshot.txt"
 # The Few Shot examples I am giving to prompt
 few_shot_example = """
 --- EXAMPLE 1 ---
-Query: "Hırsızlık suçunun cezası nedir?"
-
+Query: "Anayasa, egemenliğin kime ait olduğunu nasıl belirtiyor?"
 Documents:
-[1] "TCK Madde 141: Zilyedinin rızası olmadan başkasına ait taşınır bir malı..." 
-[2] "Borçlar Kanunu Madde 1: Sözleşme, tarafların iradelerini..." 
-[3] "TCK Madde 142: Nitelikli hırsızlık halleri şunlardır..." 
-
-Ranking: [3] > [1] > [2]
+[1] "Madde 6 - Egemenlik, kayıtsız şartsız Milletindir. Türk Milleti, egemenliğini, Anayasanın koyduğu esaslara göre, yetkili organları eliyle kullanır."
+[2] "Madde 7 - Yasama yetkisi Türk Milleti adına Türkiye Büyük Millet Meclisinindir. Bu yetki devredilemez."
+[3] "Madde 41 - Seferberlik sırasında... işyerlerinde fazla çalışmaya lüzum görülürse Cumhurbaşkanı günlük çalışma süresini... çıkarabilir."
+Ranking: [1] > [2] > [3]
 -------------------------------------------------------------
 --- EXAMPLE 2 ---
-Query: "İşçi yıllık ücretli izne ne zaman hak kazanır?"
-
+Query: "Anayasaya göre Türk Vatanı ve Milletinin ebedi varlığı neye dayanır?"
 Documents:
-[1] "İşveren, işyerinde iş sağlığı ve güvenliği önlemlerini almakla yükümlüdür." 
-[2] "İşçilere verilecek yıllık ücretli izin süresi, hizmet süresi bir yıldan beş yıla kadar olanlara on dört günden az olamaz
-[3] "İşyerinde işe başladığı günden itibaren, deneme süresi de içinde olmak üzere, en az bir yıl çalışmış olan işçilere yıllık ücretli izin verilir." 
-
-Ranking: [3] > [2] > [1]
+[1] "Başlangıç - Türk Vatanı ve Milletinin ebedi varlığını... belirleyen bu Anayasa, Atatürk’ün belirlediği milliyetçilik anlayışı ve onun inkılap ve ilkeleri doğrultusunda..."
+[2] "Başlangıç - Dünya milletleri ailesinin eşit haklara sahip şerefli bir üyesi olarak, Türkiye Cumhuriyetinin ebedi varlığı, refahı... yönünde..."
+[3] "Madde 44 - Ulusal bayram ve genel tatil günlerinde işyerlerinde çalışılıp çalışılmayacağı toplu iş sözleşmesi ile kararlaştırılır."
+Ranking: [1] > [2] > [3]
+-------------------------------------------------------------
+--- EXAMPLE 3 ---
+Query: "Sulh zamanında seferberlikle ilgili görevlerini ihmal eden kamu görevlisine ne ceza verilir?"
+Documents:
+[1] "Madde 324 - Sulh zamanında seferberlikle ilgili görevlerini ihmal eden veya geciktiren kamu görevlisine altı aydan üç yıla kadar hapis cezası verilir."
+[2] "Madde 321 - Savaş zamanında Devletin yetkili makam ve mercilerinin emir veya kararlarına bilerek aykırı harekette bulunan kimseye bir yıldan altı yıla kadar hapis cezası verilir."
+[3] "Madde 317 - Kanunen yetkili olmadıkları hâlde, bir asker kıtasının... komutasını alanlara müebbet hapis cezası verilir."
+Ranking: [1] > [2] > [3]
 -----------------
 """
 
@@ -111,8 +115,9 @@ with open(output_file, 'w') as f_out:
         query_text = queries[qid]['text']
 
         # Constructing the Prompt
-        prompt = f"""You are an expert Turkish lawyer. 
-Here are examples of how to rank documents based on relevance:
+        prompt = f"""You are an expert Turkish lawyer.
+        Rank the following documents based on their relevance to the query.
+        Study the examples below to understand the ranking logic.
 
 {few_shot_example}
 
@@ -132,8 +137,9 @@ Documents:
 
         # Forcing the model to give the output in this specified format.
         prompt += """
-Output ONLY the ranking as a list of numbers: [1] > [2] ...
-Ranking:"""
+        Output the ranking in the format: Ranking: [1] > [2] ...
+        Ranking:"""
+
 
         # API Call & Error Handling
         # 'while True' creates a retry loop if after encountering errors.
@@ -157,21 +163,37 @@ Ranking:"""
 
                 # Response Parsing
                 response_text = response.text.strip()
+
+                if "Ranking:" in response_text:
+                    final_part = response_text.split("Ranking:")[-1]
+                else:
+                    final_part = response_text.split("\n")[-1]
+
                 # Regex to find numbers inside brackets, e.g., [3], [1], [2]
-                ranked_indices = re.findall(r'\[(\d+)\]', response_text)
+                ranked_indices = re.findall(r'\[(\d+)\]', final_part)
 
                 # Fallback: If model fails to output brackets, preserve original order
                 if not ranked_indices:
                     ranked_indices = [str(k) for k in range(1, len(doc_list) + 1)]
 
-
                 # Write to File (TREC Format)
                 rank = 1
+                seen_indices = set()
                 for idx in ranked_indices:
-                    if idx in doc_map:
+                    if idx in doc_map and idx not in seen_indices:
                         original_doc_id = doc_map[idx]
                         # Create a score: 1.0 for 1st, 0.5 for 2nd, 0.33 for 3rd...
                         # This makes the output compatible with evaluation metrics like MAP/NDCG
+                        score = 1.0 / rank
+                        f_out.write(f"{qid} Q0 {original_doc_id} {rank} {score:.4f} GEMINI_FEWSHOT\n")
+                        seen_indices.add(idx)
+                        rank += 1
+
+                # Append missing docs if model forgot any
+                for idx in range(1, len(doc_list) + 1):
+                    s_idx = str(idx)
+                    if s_idx not in seen_indices:
+                        original_doc_id = doc_map[s_idx]
                         score = 1.0 / rank
                         f_out.write(f"{qid} Q0 {original_doc_id} {rank} {score:.4f} GEMINI_FEWSHOT\n")
                         rank += 1
