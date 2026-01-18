@@ -34,7 +34,7 @@ Simply run the `python main.py` file, and it will execute all necessary files in
 Here is the order of the files.
 
 **1. Data Preparation** <br>
-Converts raw data into the standard corpus, queries, and qrels (TREC format). <br>
+Converts raw data (sourced from Batuhan Kalem's Turkish Law Dataset) into the standard corpus, queries, and qrels (TREC format). <br>
 `python prepare_data.py` <br>
 
 **2. Run Baselines** <br>
