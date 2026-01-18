@@ -36,7 +36,6 @@ Here is the order of the files.
 **1. Data Preparation** <br>
 Converts raw data into the standard corpus, queries, and qrels (TREC format). <br>
 `python prepare_data.py` <br>
-`python fix_qrels.py`
 
 **2. Run Baselines** <br>
 Generates the initial retrieval runs using BM25 and S-BERT. <br>
@@ -67,7 +66,6 @@ Generates a bar chart comparison of the results. <br>
 
 **src/:** Contains the core logic scripts for the retrieval pipeline.\
 &nbsp;&nbsp;&nbsp;&nbsp;**prepare_data.py:** Preprocesses raw CSV/Excel data into JSONL format for the corpus and queries.\
-&nbsp;&nbsp;&nbsp;&nbsp;**fix_qrels.py:** Formats the ground truth data (Qrels) into the standard TREC format.\
 &nbsp;&nbsp;&nbsp;&nbsp;**baseline_bm25.py:** Implements sparse retrieval using the BM25Okapi algorithm.\
 &nbsp;&nbsp;&nbsp;&nbsp;**baseline_sbert.py:** Implements dense retrieval using the Sentence-BERT model.\
 &nbsp;&nbsp;&nbsp;&nbsp;**rerank_gemini.py:** Implements Zero-shot reranking using the Gemini-2.0-Flash API.\
@@ -88,15 +86,21 @@ Generates a bar chart comparison of the results. <br>
 &nbsp;&nbsp;&nbsp;&nbsp;**results_chart.png:** The visual performance comparison chart.
 
 ## Results Summary
-The evaluation on the Turkish Law Dataset demonstrates that LLM-based reranking significantly enhances retrieval precision compared to traditional methods.\
-Gemini Few-Shot achieved the highest overall performance (MAP: 0.7633), indicating that providing in-context examples helps the model better understand the nuances of Turkish legal queries.\
-BM25 remains a very robust baseline for Turkish text, outperforming the S-BERT dense model, which likely struggled due to a lack of domain-specific fine-tuning on Turkish legal terminology.\
-Gemini Zero-Shot also showed impressive gains over the baselines, proving that prompt engineering is a viable alternative to expensive fine-tuning for domain-specific tasks.
+The evaluation on the Turkish Law Dataset demonstrates that LLM-based reranking significantly enhances retrieval 
+precision compared to traditional methods.\
+Gemini Zero-Shot achieved the highest overall performance (MAP: 0.7938), however, with the addition of more in-context 
+examples, Gemini Few-Shot performance improved significantly (MAP: 0.7913), achieving near-parity with the Zero-Shot 
+approach. This indicates that while the base model is robust, providing high-quality examples allows the Few-Shot 
+approach to match the model's native reasoning capabilities.\
+BM25 remains a very robust baseline for Turkish text, outperforming the S-BERT dense model, which likely struggled due 
+to a lack of domain-specific fine-tuning on Turkish legal terminology.\
+Gemini Zero-Shot also showed impressive gains over the baselines, proving that prompt engineering is a viable 
+alternative to expensive fine-tuning for domain-specific tasks.
 ![Results Comparison](outputs/results_chart.png)
 
 | Model              | MAP        | nDCG@10    | Recall@10   |
 |--------------------|------------|------------|-------------|
 | BM25 (Baseline)    | 0.7126     | 0.7500     | 0.8718      |
 | S-BERT (Dense)     | 0.5275     | 0.5713     | 0.7287      |
-| Gemini (Zero-Shot) | **0.7934** | **0.8212** | **0.9013**  |
-|  Gemini (Few-Shot) | 0.7639     | 0.7991     | **0.9013**  |
+| Gemini (Zero-Shot) | **0.7938** | **0.8215** | **0.9013**  |
+|  Gemini (Few-Shot) | 0.7913     | 0.8197     | **0.9013**  |
